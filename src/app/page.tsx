@@ -1,22 +1,30 @@
-import Image from "next/image";
-import { prisma } from "@/lib/prisma";
+"use client";
 
-async function getUsers() {
-  const users = await prisma.user.findMany();
-  console.log(users);
-  return users;
-}
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
-export default async function Home() {
-  const users = await getUsers();
+// async function getUsers() {
+//   const users = await prisma.user.findMany();
+//   console.log(users);
+//   return users;
+// }
+
+export default function Home() {
+  // const users = await getUsers();
+  const { data: session, status } = useSession();
+
+  if (!session || !status) {
+    return <Link href="/api/auth/signin">Log in</Link>;
+  }
 
   return (
     <main>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
+      <div>
+        <h1>{session?.user?.name}</h1>
+      </div>
+      <div>
+        <Link href="/api/auth/signout">Log out</Link>
+      </div>
     </main>
   );
 }
