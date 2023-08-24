@@ -11,9 +11,4 @@ export const authOptions = {
   ],
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_PUBLIC_SECRET,
-  callbacks: {
-    async redirect(url: string, baseUrl: string) {
-      return process.env.NEXTAUTH_URL;
-    },
-  },
 };
