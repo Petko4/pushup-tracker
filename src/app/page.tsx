@@ -1,29 +1,31 @@
-"use client";
-
-import { useSession } from "next-auth/react";
+import DayCard from "@/components/DayCard";
+import Month from "@/components/Month";
+import Week from "@/components/Week";
+import { authOptions } from "@/lib/auth";
+import { getUserTrackRecords } from "@/lib/dataService";
+import { TrackRecord } from "@/lib/types";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-// async function getUsers() {
-//   const users = await prisma.user.findMany();
-//   console.log(users);
-//   return users;
-// }
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  let trackRecords: TrackRecord[] = [];
 
-export default function Home() {
-  // const users = await getUsers();
-  const { data: session, status } = useSession();
+  if (session?.user?.id) {
+    trackRecords = await getUserTrackRecords(session.user.id);
+  }
 
-  if (!session || !status) {
+  if (!session) {
     return <Link href="/api/auth/signin">Log in</Link>;
   }
 
   return (
     <main>
-      <div>
-        <h1>{session?.user?.name}</h1>
-      </div>
-      <div>
-        <Link href="/api/auth/signout">Log out</Link>
+      <div className="flex justify-center">
+        <Month
+          dateInMonth={new Date(2023, 7, 15)}
+          trackRecords={trackRecords}
+        />
       </div>
     </main>
   );
